@@ -2,7 +2,12 @@
 #include <tchar.h> 
 #include <stdio.h>
 #include <strsafe.h>
+#include <time.h>
 #pragma comment(lib, "User32.lib")
+
+/* "Enumerate directory" with a timer https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilea
+ * Date: 12/16/21
+ */
 
 void DisplayErrorBox(LPTSTR lpszFunction);
 
@@ -43,8 +48,11 @@ int main(int argc, TCHAR *argv[])
    StringCchCopy(szDir, MAX_PATH, argv[1]);
    StringCchCat(szDir, MAX_PATH, TEXT("\\*"));
 
+   // Start the timer
+   clock_t start, end;
+   int msec = 0;
+   start = clock();
    // Find the first file in the directory.
-
    hFind = FindFirstFile(szDir, &ffd);
 
    if (INVALID_HANDLE_VALUE == hFind) 
@@ -77,6 +85,10 @@ int main(int argc, TCHAR *argv[])
    }
 
    FindClose(hFind);
+
+   end = clock() - start;
+   msec = end * 1000 / CLOCKS_PER_SEC;
+   printf("Done. %dms");
    return dwError;
 }
 
